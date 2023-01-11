@@ -1,4 +1,4 @@
-const http = require('http');
+import http from 'node:http'
 
 // CommonJS => utiliza require
 // ESModule => Novo padrão.. import/export.
@@ -6,4 +6,10 @@ const http = require('http');
 // Por padrão o node não suporta o ESModule.
 // Portanto adicionamos ao package.json o "type": "module".
 
-console.log(http);
+const server = http.createServer((req, res) => {
+
+  return res.end('Hello World')
+
+})
+
+server.listen(3333)
