@@ -6,7 +6,7 @@
 //   .stdin
 //   .pipe(process.stdout)
 
-import { Readable } from 'node:stream'
+import { Readable, Transform, Writable } from 'node:stream'
 
 // Criando uma stream de leitura
 class OneToHundredStream extends Readable {
@@ -31,5 +31,30 @@ class OneToHundredStream extends Readable {
   }
 }
 
+class InverseNumberStream extends Transform {
+  _transform(chunk, encoding, callback) {
+    const number = Number(chunk.toString())
+    const inverse = number * -1
+
+    // this.push(Buffer.from(`${inverse}\n`))
+
+    callback(null, Buffer.from(`${inverse}\n`))
+  }
+}
+
+class MultiplyByTenStream extends Writable {
+  // Método obrigatório de WritableStreams
+  // chunk -> pedaço que a gente leu da stream de leitura
+  // encoding -> codificação da informação
+  // callback -> função que deve ser chamada quando a gente terminar de processar o chunk
+  _write(chunk, encoding, callback){
+    console.log(Number(chunk.toString()) * 10);
+    callback()
+  }
+}
+
+
+
 new OneToHundredStream()
-  .pipe(process.stdout)
+  .pipe(new InverseNumberStream())
+  .pipe(new MultiplyByTenStream())
