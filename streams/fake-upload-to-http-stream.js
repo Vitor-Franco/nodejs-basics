@@ -18,11 +18,15 @@ class OneToHundredStream extends Readable {
         
         this.push(buf)
       }
-    }, 1000);  
+    }, 100);  
   }
 }
 
 fetch('http://localhost:3334', {
   method: 'POST',
   body: new OneToHundredStream(), // Passa uma stream no body da req
+}).then(res => {
+  return res.text()
+}).then(data => {
+  console.log(data);
 })

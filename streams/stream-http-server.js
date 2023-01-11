@@ -14,11 +14,24 @@ class InverseNumberStream extends Transform {
 // req -> ReadableStream (ler dados da requisição)
 // res -> WritableStream (escrever dados na resposta)
 
-const server = http.createServer((req, res) => {
+// Vamos utilizar stream, em exemplos de vídeo, música, texto e etc.
+// Em JSON, n faz sentido utilizar stream, pois um JSON parcial é pouco informativo
+const server = http.createServer(async (req, res) => {
   if(req.method === 'POST') {
-    return req
-        .pipe(new InverseNumberStream())
-        .pipe(res)
+    const buffers = []
+
+    // aguarda todos os chunks chegarem
+    for await (const chunk of req) {
+      buffers.push(chunk)
+    }
+
+    const fullStreamContent = Buffer.concat(buffers).toString()
+    console.log("🚀 ~ server ~ fullStreamContent", fullStreamContent)
+
+    return res.end(fullStreamContent)
+    // return req
+    //     .pipe(new InverseNumberStream())
+    //     .pipe(res)
   }
 })
 
