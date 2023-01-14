@@ -26,7 +26,6 @@ const server = http.createServer(async (req, res) => {
     }
 
     const fullStreamContent = Buffer.concat(buffers).toString()
-    console.log("🚀 ~ server ~ fullStreamContent", fullStreamContent)
 
     return res.end(fullStreamContent)
     // return req
