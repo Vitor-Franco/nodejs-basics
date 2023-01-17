@@ -33,4 +33,28 @@ export class Database {
 
     return data
   }
+
+  delete(table, id) {
+    const data = this.select(table)
+
+    const index = data.findIndex(item => item.id === id)
+
+    if(index > -1) {
+      data.splice(index, 1)
+      
+      this.#persist()
+    }
+  }
+
+  update(table, id, data) {
+    const tableData = this.select(table)
+
+    const index = tableData.findIndex(item => item.id === id)
+
+    if(index > -1) {
+      tableData.splice(index, 1, data)
+      
+      this.#persist()
+    }
+  }
 }
