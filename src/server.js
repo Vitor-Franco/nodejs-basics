@@ -1,42 +1,24 @@
 import http from 'node:http'
-import { randomUUID } from 'node:crypto'
 import { Database } from './database.js';
 import { json } from './middlewares/json.js';
+import { routes } from './router.js';
 
 // CommonJS => utiliza require
 // ESModule => Novo padrão.. import/export.
 
 // Por padrão o node não suporta o ESModule.
 // Portanto adicionamos ao package.json o "type": "module".
-
-const database = new Database()
+ 
 
 const server = http.createServer(async (req, res) => {
-
-  const { method, url } = req;
-
   await json(req, res);
 
-  if(method === 'GET' && url === '/users') {
-    const users = database.select('users')
-
-    return res.end(JSON.stringify(users))
-  }
-
-  if(method === 'POST' && url === '/users') {
-    const { name, email } = req.body
-
-    const user = {
-      name,
-      email,
-      id: randomUUID()
-    }
-
-    database.insert('users', user)
-
-    return res.writeHead(201).end()
-  }
+  const route = routes.find(({ method, path }) => method === req.method && path === req.url)
   
+  if (route) {
+    return route.handler(req, res)
+  }
+
   return res.writeHead(404).end()
 })
 
