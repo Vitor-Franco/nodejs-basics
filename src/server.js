@@ -2,6 +2,7 @@ import http from 'node:http'
 import { Database } from './database.js';
 import { json } from './middlewares/json.js';
 import { routes } from './router.js';
+import { extractQueryParams } from './utils/extract-query-params.js';
 
 // CommonJS => utiliza require
 // ESModule => Novo padrão.. import/export.
@@ -13,17 +14,18 @@ import { routes } from './router.js';
 const server = http.createServer(async (req, res) => {
   await json(req, res);
 
-  console.log("🚀 ~ server ~ routes", routes)
-  console.log(req.url);
-
   const route = routes.find((route) => {
     return route.method === req.method && route.path.test(req.url)
   })
+  console.log("🚀 ~ route ~ route", route)
   
   if (route) {
     const routeParams = req.url.match(route.path)
 
-    req.params = { ...routeParams.groups }
+    const { query, ...params } = routeParams.groups
+
+    req.params = params
+    req.query = query ? extractQueryParams(query) : {}
 
     return route.handler(req, res)
   }
